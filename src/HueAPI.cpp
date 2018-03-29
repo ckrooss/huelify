@@ -11,15 +11,11 @@ HueAPI::~HueAPI() {
 }
 
 void HueAPI::sync() {
-    for (int light_id = 0; light_id < 100;light_id++) {
-        if (!m_bridge->lightExists(light_id)) continue;
-        try {
-            auto light = m_bridge->getLight(light_id);
-            model->add(QString::fromStdString(light.getName()));
-        }
-        catch(const std::runtime_error &e) {
-            qWarning() << e.what();
-        }
+    auto lights = m_bridge->getAllLights();
+
+    for (HueLight &hue_light: lights) {
+        Light light{QString::fromStdString(hue_light.getName()), hue_light.getBrightness(), hue_light.isOn()};
+        model->add(light);
     }
     emit modelChanged();
 }

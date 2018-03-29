@@ -10,8 +10,16 @@
 // A single light
 class Light {
 public:
-    Light(const QString &name) : name(name) {}
+    Light(const QString name, const unsigned int brightness, const bool isOn) : name(name), brightness(brightness), isOn(isOn) {}
+    Light& operator=(Light other) {
+        if(&other == this) return *this;
+        name = other.name;
+        brightness = other.brightness;
+        isOn = other.isOn;
+    }
     QString name{};
+    unsigned int brightness;
+    bool isOn;
 };
 
 
@@ -24,12 +32,16 @@ public:
     virtual ~LightModel() {}
 
     enum LightRoles {
-        NameRole = Qt::UserRole + 1
+        NameRole = Qt::UserRole + 1,
+        BrightnessRole,
+        OnRole
     };
 
     QHash<int, QByteArray> roleNames() const override{
         QHash<int, QByteArray> roles;
         roles[NameRole] = "name";
+        roles[BrightnessRole] = "brightness";
+        roles[OnRole] = "isOn";
         return roles;
     }
 
@@ -44,6 +56,15 @@ public:
         {
             return QVariant::fromValue(m_lights.at(index.row()).name);
         }
+        else if (role == BrightnessRole)
+        {
+            return QVariant::fromValue(m_lights.at(index.row()).brightness);
+        }
+        else if (role == OnRole)
+        {
+            return QVariant::fromValue(m_lights.at(index.row()).isOn);
+        }
+
         return QVariant();
     }
 
@@ -52,12 +73,21 @@ public:
         return m_lights.length();
     }
 
-    void add(const QString name) {
-        Light new_light{name};
+    void add(const Light &light) {
+        for (int idx=0; idx < m_lights.length(); idx++) {
+            if (m_lights[idx].name == light.name) {
+                beginInsertRows(QModelIndex(), idx, idx);
+                m_lights[idx] = light;
+                endInsertRows();
+                return;
+            }
+        }
+
         beginInsertRows(QModelIndex(), rowCount(), rowCount());
-        m_lights << new_light;
+        m_lights << light;
         endInsertRows();
     }
+
 
 private:
     QList<Light> m_lights{};

@@ -8,6 +8,21 @@ ApplicationWindow {
     height: 480
     title: qsTr("Huelify")
 
+    ListModel {
+        id: fakeModel
+        ListElement{
+            name: "peter"
+            brightness: 50
+            isOn: true
+        }
+
+        ListElement{
+            name: "hans"
+            brightness: 50
+            isOn: false
+        }
+    }
+
     Button {
         id: sync
         width: parent.width
@@ -23,10 +38,12 @@ ApplicationWindow {
 
         ListView {
             width: parent.width
-            model: HueAPI.model
+            model: HueAPI.model.rowCount() ? HueAPI.model : fakeModel
             delegate: Light {
                 index: index
                 text: name
+                lightBrightness: brightness / 255
+                lightOn: isOn
             }
         }
     }
