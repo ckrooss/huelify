@@ -6,17 +6,12 @@
 #include <hueplusplus/UPnP.h>
 #include <QVariantList>
 #include <QAbstractListModel>
+#include <atomic>
 
 // A single light
 class Light {
 public:
     Light(const QString name, const unsigned int brightness, const bool isOn) : name(name), brightness(brightness), isOn(isOn) {}
-    Light& operator=(Light other) {
-        if(&other == this) return *this;
-        name = other.name;
-        brightness = other.brightness;
-        isOn = other.isOn;
-    }
     QString name{};
     unsigned int brightness;
     bool isOn;
@@ -28,7 +23,7 @@ class LightModel: public QAbstractListModel
 {
     Q_OBJECT
 public:
-    explicit LightModel(QObject *parent = 0) {}
+    explicit LightModel(QObject *parent = 0) : QAbstractListModel(parent) {}
     virtual ~LightModel() {}
 
     enum LightRoles {
@@ -100,11 +95,13 @@ public:
     explicit HueAPI();
     virtual ~HueAPI();
     Q_INVOKABLE void sync();
+    Q_INVOKABLE void setBrightness(int id, int bri);
     LightModel *model;
 private:
     std::shared_ptr<LinHttpHandler> m_handler;
     Hue* m_bridge;
     Q_SIGNAL void modelChanged();
-    const std::string ip = "PUT_IP_HERE";
-    const std::string username = "PUT_USERNAME_HERE";
+    const std::string ip = "192.168.178.35";
+    const std::string username = "1Bg4rqVIkCxRzSfPURfI5SrfEpZMOAktzzMTNXhL";
+    std::atomic<bool> m_locked{false};
 };

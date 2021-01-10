@@ -10,17 +10,6 @@ ApplicationWindow {
 
     ListModel {
         id: fakeModel
-        ListElement{
-            name: "peter"
-            brightness: 50
-            isOn: true
-        }
-
-        ListElement{
-            name: "hans"
-            brightness: 50
-            isOn: false
-        }
     }
 
     Button {

@@ -1,5 +1,6 @@
 import QtQuick 2.0
 import QtQuick.Controls 2.2
+import com.hue.HueAPI 1.0
 
 Item {
     property alias text: txt.text
@@ -31,10 +32,11 @@ Item {
         height: parent.height
         anchors.left: txt.right
         anchors.right: parent.right
-
+        from: 0
+        to: 254
 
         onValueChanged: {
-            console.warn(value)
+            HueAPI.setBrightness(24, parseInt(value))
         }
     }
 }
